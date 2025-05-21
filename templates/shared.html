@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}BookQuiz - Shared Content{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark">
+                <h4 class="mb-0">
+                    {% if content_type == 'quiz' %}
+                        Shared Quiz Results
+                    {% else %}
+                        Shared Achievement
+                    {% endif %}
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <div class="avatar-circle mb-3 mx-auto">
+                        <span class="avatar-text">{{ user.username[0]|upper }}</span>
+                    </div>
+                    <h5>{{ user.username }}</h5>
+                    <p class="text-muted small">Shared on {{ shared_content.created_at.strftime('%b %d, %Y') }}</p>
+                </div>
+                
+                {% if content_type == 'quiz' %}
+                    <!-- Shared Quiz Results -->
+                    <div class="text-center mb-4">
+                        <h2 class="display-4 mb-2">
+                            {% set emoji = '🏆' if content.score >= 90 else '🌟' if content.score >= 80 else '😊' if content.score >= 70 else '🙂' if content.score >= 60 else '😐' if content.score >= 40 else '😢' %}
+                            {{ emoji }} {{ "%.0f"|format(content.score) }}%
+                        </h2>
+                        <p class="lead">{{ content.correct_answers }} out of {{ content.total_questions }} correct answers</p>
+                        
+                        <div class="mb-3">
+                            <span class="badge bg-secondary me-2">
+                                {% if content.topic_type == 'book' %}
+                                    Book: "{{ content.topic }}"
+                                {% else %}
+                                    Author: {{ content.topic }}
+                                {% endif %}
+                            </span>
+                            <span class="badge bg-secondary">
+                                {% if content.challenge_level == 'easy' %}
+                                    Easy 😊
+                                {% elif content.challenge_level == 'middle' %}
+                                    Medium 🧐
+                                {% else %}
+                                    Hard 🤔
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        <p class="mb-0">Quiz completed on {{ content.completed_at.strftime('%b %d, %Y') }}</p>
+                    </div>
+                {% else %}
+                    <!-- Shared Achievement -->
+                    <div class="text-center mb-4">
+                        <div class="achievement-icon-large mb-3 mx-auto">
+                            <i data-feather="{{ content.badge_icon }}" class="text-warning"></i>
+                        </div>
+                        <h3>{{ content.name }}</h3>
+                        <p>{{ content.description }}</p>
+                        <div class="mt-3">
+                            <span class="badge bg-primary">{{ content.points }} points</span>
+                            <span class="text-muted ms-2">Achieved on {{ content.achieved_at.strftime('%b %d, %Y') }}</span>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <hr>
+                
+                <div class="text-center">
+                    <p>Enjoyed this? Create your own literary quizzes!</p>
+                    {% if not current_user.is_authenticated %}
+                        <div class="d-grid gap-2 col-6 mx-auto">
+                            <a href="{{ url_for('auth.register') }}" class="btn btn-primary">
+                                <i data-feather="user-plus" class="feather-small me-1"></i> Sign Up for BookQuiz
+                            </a>
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-secondary">
+                                <i data-feather="log-in" class="feather-small me-1"></i> Log In
+                            </a>
+                        </div>
+                    {% else %}
+                        <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary">
+                            <i data-feather="home" class="feather-small me-1"></i> Go to Dashboard
+                        </a>
+                    {% endif %}
+                </div>
+                
+                <div class="mt-4 text-center text-muted">
+                    <small>Viewed {{ shared_content.view_count }} times</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

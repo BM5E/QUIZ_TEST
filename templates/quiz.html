@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}BookQuiz - {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-dark">
+                <h4 class="mb-0">{{ quiz.title }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <p class="mb-1">{{ topic_display }}</p>
+                        <p class="mb-0">
+                            <span class="badge bg-secondary me-2">{{ challenge_level }}</span>
+                            <span class="badge bg-secondary">{{ quiz.total_questions }} Questions</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <form method="POST" action="{{ url_for('quiz.submit_quiz', quiz_id=quiz.id) }}" id="quizForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    
+                    {% for question in questions %}
+                        <div class="card mb-4">
+                            <div class="card-header bg-dark">
+                                <h5 class="mb-0">Question {{ loop.index }}</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="question-text mb-3">{{ question.question_text }}</p>
+                                
+                                {% if question.question_type == 'choice' %}
+                                    <div class="mb-3">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_a" value="{{ question.option_a }}" required>
+                                            <label class="form-check-label" for="q{{ question.id }}_a">{{ question.option_a }}</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_b" value="{{ question.option_b }}">
+                                            <label class="form-check-label" for="q{{ question.id }}_b">{{ question.option_b }}</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_c" value="{{ question.option_c }}">
+                                            <label class="form-check-label" for="q{{ question.id }}_c">{{ question.option_c }}</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_d" value="{{ question.option_d }}">
+                                            <label class="form-check-label" for="q{{ question.id }}_d">{{ question.option_d }}</label>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="mb-3">
+                                        <input type="text" class="form-control" name="question_{{ question.id }}" placeholder="Your answer" required>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">Submit Quiz</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

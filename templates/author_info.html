@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}BookQuiz - {{ author.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-dark">
+                <h4 class="mb-0">{{ author.name }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <span class="badge bg-secondary me-2">{{ author.nationality }}</span>
+                    {% if author.birth_year != 'Unknown' %}
+                        <span class="badge bg-secondary me-2">{{ author.birth_year }}
+                            {% if author.death_year != 'Unknown' %}
+                                - {{ author.death_year }}
+                            {% endif %}
+                        </span>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-4">
+                    <h5>Biography</h5>
+                    <p>{{ author.biography }}</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h5>Writing Style</h5>
+                    <p>{{ author.writing_style }}</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h5>Influence</h5>
+                    <p>{{ author.influence }}</p>
+                </div>
+                
+                <form action="{{ url_for('quiz.create_quiz') }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="topic" value="{{ author.name }}">
+                    <input type="hidden" name="topic_type" value="author">
+                    <button type="submit" class="btn btn-primary">
+                        <i data-feather="edit-3" class="feather-small me-1"></i> Create Quiz About This Author
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Notable Works</h5>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    {% if author.notable_works %}
+                        {% for work in author.notable_works %}
+                            {% if work != "Information unavailable" and work != "Information temporarily unavailable" %}
+                                <li class="list-group-item bg-dark d-flex justify-content-between align-items-center">
+                                    {{ work }}
+                                    <form action="{{ url_for('quiz.create_quiz') }}" method="POST" class="d-inline">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="topic" value="{{ work }}">
+                                        <input type="hidden" name="topic_type" value="book">
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                            <i data-feather="edit-3" class="feather-small"></i>
+                                        </button>
+                                    </form>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item bg-dark">No notable works listed</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Quiz Options</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('quiz.create_quiz') }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="topic" value="{{ author.name }}">
+                    <input type="hidden" name="topic_type" value="author">
+                    
+                    <div class="mb-3">
+                        <label for="challenge_level" class="form-label">Difficulty Level</label>
+                        <select class="form-select" id="challenge_level" name="challenge_level">
+                            <option value="easy">Easy</option>
+                            <option value="middle" selected>Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="question_type" class="form-label">Question Type</label>
+                        <select class="form-select" id="question_type" name="question_type">
+                            <option value="choice" selected>Multiple Choice</option>
+                            <option value="blank">Fill in the Blank</option>
+                            <option value="mixed">Mixed</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="num_questions" class="form-label">Number of Questions</label>
+                        <select class="form-select" id="num_questions" name="num_questions">
+                            <option value="5" selected>5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i data-feather="edit-3" class="feather-small me-1"></i> Create Custom Quiz
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

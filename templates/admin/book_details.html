@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Book Details - {{ book.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.books') }}">Books</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ book.title }}</li>
+                </ol>
+            </nav>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            {% if book.cover_image_url %}
+            <img src="{{ book.cover_image_url }}" alt="{{ book.title }}" class="img-fluid rounded shadow-sm mb-3">
+            {% else %}
+            <div class="ratio ratio-3x4 bg-light rounded d-flex justify-content-center align-items-center mb-3">
+                <div class="text-center text-muted">
+                    <i class="bi bi-book fs-1"></i>
+                    <p class="mt-2">No cover image</p>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="d-grid gap-2">
+                <a href="{{ url_for('admin.generate_questions', book_id=book.id) }}" class="btn btn-primary">
+                    <i class="bi bi-lightning"></i> Generate Comprehensive Question Set
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h1 class="card-title">{{ book.title }}</h1>
+                    <h5 class="card-subtitle mb-3 text-muted">by {{ book.author }}</h5>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Genre:</strong> {{ book.genre or 'Unknown' }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Publication Year:</strong> {{ book.publication_year or 'Unknown' }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <p><strong>Google Books ID:</strong> {{ book.google_books_id or 'N/A' }}</p>
+                        <p><strong>ISBN:</strong> {{ book.isbn or 'N/A' }}</p>
+                    </div>
+                    
+                    <h5>Description</h5>
+                    <p>{{ book.description or 'No description available.' }}</p>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">Question Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Question Type</th>
+                                    <th>Easy</th>
+                                    <th>Medium</th>
+                                    <th>Hard</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Multiple Choice</strong></td>
+                                    <td>{{ question_stats.choice.easy }}</td>
+                                    <td>{{ question_stats.choice.middle }}</td>
+                                    <td>{{ question_stats.choice.hard }}</td>
+                                    <td>{{ question_stats.choice.easy + question_stats.choice.middle + question_stats.choice.hard }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Fill in the Blank</strong></td>
+                                    <td>{{ question_stats.blank.easy }}</td>
+                                    <td>{{ question_stats.blank.middle }}</td>
+                                    <td>{{ question_stats.blank.hard }}</td>
+                                    <td>{{ question_stats.blank.easy + question_stats.blank.middle + question_stats.blank.hard }}</td>
+                                </tr>
+                                <tr class="table-light">
+                                    <td><strong>Total</strong></td>
+                                    <td>{{ question_stats.choice.easy + question_stats.blank.easy }}</td>
+                                    <td>{{ question_stats.choice.middle + question_stats.blank.middle }}</td>
+                                    <td>{{ question_stats.choice.hard + question_stats.blank.hard }}</td>
+                                    <td>{{ question_stats.choice.easy + question_stats.choice.middle + question_stats.choice.hard + question_stats.blank.easy + question_stats.blank.middle + question_stats.blank.hard }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    {% if question_stats.choice.easy + question_stats.choice.middle + question_stats.choice.hard + question_stats.blank.easy + question_stats.blank.middle + question_stats.blank.hard == 0 %}
+                    <div class="alert alert-info mt-3">
+                        <i class="bi bi-info-circle"></i> No questions have been generated for this book yet. Use the "Generate Comprehensive Question Set" button to create questions.
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success mt-3">
+                        <i class="bi bi-check-circle"></i> This book has {{ question_stats.choice.easy + question_stats.choice.middle + question_stats.choice.hard + question_stats.blank.easy + question_stats.blank.middle + question_stats.blank.hard }} questions available for quiz generation.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

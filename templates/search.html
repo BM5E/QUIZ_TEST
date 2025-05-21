@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}BookQuiz - Search{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-dark">
+                <h4 class="mb-0">Search Books & Authors</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('main.search') }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row align-items-end">
+                        <div class="col-md-8 mb-3">
+                            {{ form.query.label(class="form-label") }}
+                            {{ form.query(class="form-control", placeholder="e.g. Pride and Prejudice, J.K. Rowling") }}
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex">
+                                <div class="form-check me-3">
+                                    {{ form.search_type(type="radio", class="form-check-input", id="search_book", value="book", checked=true) }}
+                                    <label class="form-check-label" for="search_book">Book</label>
+                                </div>
+                                <div class="form-check">
+                                    {{ form.search_type(type="radio", class="form-check-input", id="search_author", value="author") }}
+                                    <label class="form-check-label" for="search_author">Author</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        {% if search_performed %}
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark">
+                    <h5 class="mb-0">Search Results</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if results %}
+                        <div class="list-group list-group-flush">
+                            {% for result in results %}
+                                <div class="list-group-item">
+                                    {% if 'title' in result %}
+                                        <!-- Book result -->
+                                        <div class="d-flex">
+                                            {% if result.thumbnail or result.cover_image_url %}
+                                            <div class="flex-shrink-0 me-3" style="width: 100px;">
+                                                <img src="{{ result.thumbnail or result.cover_image_url }}" alt="{{ result.title }}" class="img-fluid rounded">
+                                            </div>
+                                            {% endif %}
+                                            <div class="flex-grow-1">
+                                                <h5 class="mb-1">{{ result.title }}</h5>
+                                                <h6 class="mb-1 text-muted">by {{ result.author }}</h6>
+                                                <p class="small text-muted mb-2">
+                                                    {{ result.publication_year }} • {{ result.genre }}
+                                                </p>
+                                                <p class="mb-2">{{ truncate_text(result.description, 200) }}</p>
+                                            </div>
+                                            <div class="ms-3">
+                                                <form action="{{ url_for('quiz.create_quiz') }}" method="POST" class="d-inline">
+                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                    <input type="hidden" name="topic" value="{{ result.title }}">
+                                                    <input type="hidden" name="topic_type" value="book">
+                                                    {% if result.google_books_id %}
+                                                    <input type="hidden" name="google_books_id" value="{{ result.google_books_id }}">
+                                                    {% endif %}
+                                                    <button type="submit" class="btn btn-sm btn-primary">Create Quiz</button>
+                                                </form>
+                                                <a href="{{ url_for('main.book_info', book_title=result.title) }}" class="btn btn-sm btn-outline-secondary mt-2">View Details</a>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <!-- Author result -->
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <h5 class="mb-1">{{ result.name }}</h5>
+                                                <p class="small text-muted mb-2">
+                                                    {{ result.nationality }}
+                                                    {% if result.birth_year != 'Unknown' %}
+                                                        • {{ result.birth_year }}
+                                                        {% if result.death_year != 'Unknown' %}
+                                                            - {{ result.death_year }}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </p>
+                                                <p class="mb-2">{{ truncate_text(result.biography, 200) }}</p>
+                                                {% if result.notable_works %}
+                                                    <p class="small mb-0"><strong>Notable works:</strong> 
+                                                        {{ result.notable_works|join(', ') if result.notable_works is iterable and result.notable_works is not string else result.notable_works }}
+                                                    </p>
+                                                {% endif %}
+                                            </div>
+                                            <div class="ms-3">
+                                                <form action="{{ url_for('quiz.create_quiz') }}" method="POST" class="d-inline">
+                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                    <input type="hidden" name="topic" value="{{ result.name }}">
+                                                    <input type="hidden" name="topic_type" value="author">
+                                                    <button type="submit" class="btn btn-sm btn-primary">Create Quiz</button>
+                                                </form>
+                                                <a href="{{ url_for('main.author_info', author_name=result.name) }}" class="btn btn-sm btn-outline-secondary mt-2">View Details</a>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center p-4">
+                            <p class="mb-0">No results found. Please try a different search term.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}BookQuiz - Create Quiz{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark">
+                <h4 class="mb-0">Create a New Quiz</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('quiz.create_quiz') }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-4">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="topic" class="form-label">Topic</label>
+                                    <input type="text" class="form-control" id="topic" name="topic" required 
+                                           value="{{ request.form.get('topic', '') }}" placeholder="e.g. Pride and Prejudice, J.K. Rowling">
+                                    <div class="form-text">Enter a book title or author name</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="topic_type" class="form-label">Topic Type</label>
+                                    <select class="form-select" id="topic_type" name="topic_type" required>
+                                        <option value="book" {% if request.form.get('topic_type') == 'book' %}selected{% endif %}>Book</option>
+                                        <option value="author" {% if request.form.get('topic_type') == 'author' %}selected{% endif %}>Author</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>Quiz Options</h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.num_questions.label(class="form-label") }}
+                                    {{ form.num_questions(class="form-select") }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.challenge_level.label(class="form-label") }}
+                                    {{ form.challenge_level(class="form-select") }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.question_type.label(class="form-label") }}
+                                    {{ form.question_type(class="form-select") }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i data-feather="info" style="width: 24px; height: 24px;"></i>
+                            </div>
+                            <div>
+                                <h5 class="alert-heading">Quiz Generation</h5>
+                                <p class="mb-0">
+                                    We'll use AI to generate custom questions based on your topic.
+                                    The quiz will be tailored to the difficulty level and question type you choose.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid mt-4">
+                        {{ form.submit(class="btn btn-primary btn-lg") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

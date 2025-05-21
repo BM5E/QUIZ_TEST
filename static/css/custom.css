@@ -1,0 +1,168 @@
+/*
+ * BookQuiz Custom CSS
+ * Minimal styling to complement the Replit Bootstrap theme
+ */
+
+/* Base utility classes */
+.feather-small {
+    width: 16px;
+    height: 16px;
+    vertical-align: text-bottom;
+}
+
+.feather-smaller {
+    width: 14px;
+    height: 14px;
+    vertical-align: text-bottom;
+}
+
+.feather-large {
+    width: 48px;
+    height: 48px;
+}
+
+/* Avatar styling */
+.avatar-circle {
+    width: 80px;
+    height: 80px;
+    background-color: var(--bs-primary);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+}
+
+.avatar-text {
+    color: white;
+    font-size: 36px;
+    font-weight: bold;
+}
+
+/* Achievement icon styling */
+.achievement-icon {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.achievement-icon-large {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.achievement-icon-large svg {
+    width: 40px;
+    height: 40px;
+}
+
+/* Error page styling */
+.error-container {
+    padding: 2rem 0;
+}
+
+/* Question text styling */
+.question-text {
+    font-weight: 500;
+}
+
+/* Card hover effect for dashboard items */
+.dashboard-card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-3px);
+}
+
+/* Optimize loading - Critical CSS */
+.navbar,
+.navbar-brand,
+.card,
+.btn {
+    transition: none !important;
+}
+
+/* Custom form focus states for better visibility */
+.form-control:focus,
+.form-select:focus {
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+/* Optimize quiz cards */
+.form-check-input[data-correct="true"] {
+    border-color: var(--bs-success);
+}
+
+/* Custom scrollbar for better visual appearance */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+    .avatar-circle {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .avatar-text {
+        font-size: 28px;
+    }
+    
+    .achievement-icon-large {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .achievement-icon-large svg {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+/* Print styles for quiz results */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .navbar,
+    .footer,
+    .btn {
+        display: none !important;
+    }
+    
+    .card {
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+    }
+    
+    body {
+        color: #000 !important;
+        background-color: #fff !important;
+    }
+}

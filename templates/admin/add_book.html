@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Add Book from Google Books{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.books') }}">Books</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Add Book</li>
+                </ol>
+            </nav>
+        </div>
+        
+        <div class="col-md-12">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Search Google Books</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('admin.add_book') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-8">
+                                <input type="text" class="form-control form-control-lg" name="query" placeholder="Search by title, author, or ISBN" required>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="bi bi-search"></i> Search
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            {% if search_performed %}
+                {% if results %}
+                <h4 class="mb-3">Search Results</h4>
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    {% for book in results %}
+                    <div class="col">
+                        <div class="card h-100 border-0 shadow-sm">
+                            {% if book.thumbnail %}
+                            <img src="{{ book.thumbnail }}" class="card-img-top p-3" alt="{{ book.title }}" style="max-height: 200px; object-fit: contain;">
+                            {% else %}
+                            <div class="card-img-top p-3 text-center">
+                                <i class="bi bi-book text-muted" style="font-size: 5rem;"></i>
+                            </div>
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ book.title }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">by {{ book.author }}</h6>
+                                <p class="card-text small">{{ book.description|truncate(150) }}</p>
+                                <p class="small text-muted">
+                                    {% if book.publication_year %}Published: {{ book.publication_year }}{% endif %}
+                                    {% if book.genre %} • Genre: {{ book.genre }}{% endif %}
+                                </p>
+                            </div>
+                            <div class="card-footer bg-transparent border-0">
+                                <form method="POST" action="{{ url_for('admin.add_book') }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="query" value="{{ request.form.get('query') }}">
+                                    <input type="hidden" name="add_book_id" value="{{ book.google_books_id }}">
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <i class="bi bi-plus-circle"></i> Add to Database
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i> No books found matching your search. Please try different keywords.
+                </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

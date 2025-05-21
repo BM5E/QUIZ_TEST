@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Generate Questions - {{ book.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.books') }}">Books</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.book_details', book_id=book.id) }}">{{ book.title }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Generate Questions</li>
+                </ol>
+            </nav>
+        </div>
+        
+        <div class="col-md-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Generate Comprehensive Question Set</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h3>{{ book.title }}</h3>
+                            <h5 class="text-muted">by {{ book.author }}</h5>
+                            <p>{{ book.description|truncate(300) }}</p>
+                            
+                            <div class="alert alert-info">
+                                <h5><i class="bi bi-info-circle"></i> What will be generated?</h5>
+                                <p>This will generate a comprehensive set of 198 questions for this book:</p>
+                                <ul>
+                                    <li>33 easy multiple-choice questions</li>
+                                    <li>33 medium multiple-choice questions</li>
+                                    <li>33 hard multiple-choice questions</li>
+                                    <li>33 easy fill-in-the-blank questions</li>
+                                    <li>33 medium fill-in-the-blank questions</li>
+                                    <li>33 hard fill-in-the-blank questions</li>
+                                </ul>
+                                <p>The process may take several minutes to complete as it uses AI to generate high-quality questions specific to this book.</p>
+                            </div>
+                            
+                            <form method="POST" action="{{ url_for('admin.generate_questions', book_id=book.id) }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-lg btn-success">
+                                        <i class="bi bi-lightning"></i> Start Generation Process
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            {% if book.cover_image_url %}
+                            <img src="{{ book.cover_image_url }}" alt="{{ book.title }}" class="img-fluid rounded shadow-sm mb-3">
+                            {% else %}
+                            <div class="ratio ratio-3x4 bg-light rounded d-flex justify-content-center align-items-center mb-3">
+                                <div class="text-center text-muted">
+                                    <i class="bi bi-book fs-1"></i>
+                                    <p class="mt-2">No cover image</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

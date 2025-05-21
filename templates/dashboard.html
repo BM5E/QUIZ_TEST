@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}BookQuiz - Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="mb-0">Welcome, {{ user.username }}!</h2>
+                    <span class="badge bg-primary p-2">{{ user.points }} Points</span>
+                </div>
+                <p class="lead">Ready to test your literary knowledge?</p>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('main.search') }}" class="btn btn-primary">
+                        <i data-feather="search" class="feather-small me-1"></i> Search Books & Authors
+                    </a>
+                    <a href="{{ url_for('quiz.create_quiz') }}" class="btn btn-outline-secondary">
+                        <i data-feather="edit" class="feather-small me-1"></i> Create a Quiz
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-dark d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Quizzes</h5>
+                <a href="{{ url_for('main.profile') }}" class="text-decoration-none small">View All</a>
+            </div>
+            <div class="card-body p-0">
+                {% if recent_quizzes %}
+                    <div class="list-group list-group-flush">
+                        {% for quiz in recent_quizzes %}
+                            <a href="{{ url_for('quiz.quiz_results', quiz_id=quiz.id) if quiz.is_completed else url_for('quiz.take_quiz', quiz_id=quiz.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ quiz.title }}</h6>
+                                    <p class="mb-1 small text-muted">
+                                        {% if quiz.topic_type == 'book' %}
+                                            <i data-feather="book" class="feather-smaller me-1"></i> Book
+                                        {% else %}
+                                            <i data-feather="user" class="feather-smaller me-1"></i> Author
+                                        {% endif %}
+                                        • {{ quiz.challenge_level|capitalize }} • {{ quiz.created_at.strftime('%b %d, %Y') }}
+                                    </p>
+                                </div>
+                                {% if quiz.is_completed %}
+                                    <span class="badge bg-success rounded-pill">{{ format_score(quiz.score) }}</span>
+                                {% else %}
+                                    <span class="badge bg-warning rounded-pill">In Progress</span>
+                                {% endif %}
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center p-4">
+                        <p class="mb-0">You haven't created any quizzes yet.</p>
+                        <a href="{{ url_for('quiz.create_quiz') }}" class="btn btn-sm btn-primary mt-2">Create Your First Quiz</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-dark d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Achievements</h5>
+                <a href="{{ url_for('main.profile') }}" class="text-decoration-none small">View All</a>
+            </div>
+            <div class="card-body p-0">
+                {% if achievements %}
+                    <div class="list-group list-group-flush">
+                        {% for achievement in achievements %}
+                            <div class="list-group-item">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <i data-feather="{{ achievement.badge_icon }}" class="text-warning"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">{{ achievement.name }}</h6>
+                                        <p class="mb-1 small">{{ achievement.description }}</p>
+                                        <small class="text-muted">{{ achievement.achieved_at.strftime('%b %d, %Y') }} • {{ achievement.points }} points</small>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center p-4">
+                        <p class="mb-0">You haven't earned any achievements yet.</p>
+                        <a href="{{ url_for('quiz.create_quiz') }}" class="btn btn-sm btn-primary mt-2">Take a Quiz to Earn Achievements</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Recommended for You</h5>
+            </div>
+            <div class="card-body">
+                {% if recommendations %}
+                    <div class="row">
+                        {% for rec in recommendations %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 bg-dark">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ rec.title }}</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">by {{ rec.author }}</h6>
+                                        <p class="card-text small">{{ rec.reason }}</p>
+                                        <form action="{{ url_for('quiz.create_quiz') }}" method="POST" class="d-inline">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <input type="hidden" name="topic" value="{{ rec.title }}">
+                                            <input type="hidden" name="topic_type" value="book">
+                                            <button type="submit" class="btn btn-sm btn-outline-primary">Create Quiz</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-center mb-0">Complete some quizzes to get personalized recommendations.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
